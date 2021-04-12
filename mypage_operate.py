@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 
 
 import re
@@ -8,7 +8,6 @@ from selenium import webdriver
 import operator
 import pandas  as pd
 from collections import Counter
-
 
 
 #
@@ -55,7 +54,7 @@ def over_ten_data(driver):
     over_ten_rows = []
     for row in rows:
         times = row[4]
-        times = int(re.sub("\D","", times))
+        times = int(re.sub("\D", "", times))
         if times >= 10:
             over_ten_rows.append(row)
 
@@ -94,17 +93,22 @@ def delete_by_api(task_id):
 
 def count_by_type(rows):
     df = pd.DataFrame(rows)
+    if df.empty:
+        print('没有采集次数大于10的数据')
+        return
     count = df[1].value_counts()
     print("-------------包含大于等于10数据的采集类型-------------")
     print(count)
     return count
 
+
 def check_webpage(driver, rows):
     ...
 
+
 def main():
     driver = webdriver.Chrome()
-    driver.get("http://47.97.123.142:8780/pigeonDataCollect/superLogin.html")
+    driver.get("http://120.26.197.64:8980/pigeonDataCollect/superLogin.html")
     driver.implicitly_wait(10)
     driver.maximize_window()
     driver.find_element(By.ID, "username").send_keys("checkAdmin")
@@ -117,7 +121,8 @@ def main():
     count_by_type(over_ten_rows)
 
     driver.quit()
-    #rows = [['1532806519', 'shangHaiXiehuiSecond', '2020年12月21日', '23时21分', '134次', '2020年12月24日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7529'], ['1532806524', 'shangHaiXiehuiSecond', '2020年12月21日', '23时21分', '134次', '2020年12月24日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7535'], ['1532806522', 'shangHaiXiehuiSecond', '2020年12月21日', '23时21分', '134次', '2020年12月24日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7531'], ['1534961405', 'shangHaiXiehuiSecond', '2020年12月24日', '23时21分', '122次', '2020年12月27日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7541'], ['1534961411', 'shangHaiXiehuiSecond', '2020年12月24日', '23时21分', '122次', '2020年12月27日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7543'], ['1534961415', 'shangHaiXiehuiSecond', '2020年12月24日', '23时21分', '122次', '2020年12月27日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7545'], ['1535847494', 'shangHaiXiehuiSecond', '2020年12月28日', '17时59分', '104次', '2020年12月31日', '17时59分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7555'], ['1535847492', 'shangHaiXiehuiSecond', '2020年12月28日', '17时59分', '105次', '2020年12月31日', '17时59分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7553'], ['1535847490', 'shangHaiXiehuiSecond', '2020年12月28日', '17时59分', '105次', '2020年12月31日', '17时59分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7551']]
+    # rows = [['1532806519', 'shangHaiXiehuiSecond', '2020年12月21日', '23时21分', '134次', '2020年12月24日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7529'], ['1532806524', 'shangHaiXiehuiSecond', '2020年12月21日', '23时21分', '134次', '2020年12月24日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7535'], ['1532806522', 'shangHaiXiehuiSecond', '2020年12月21日', '23时21分', '134次', '2020年12月24日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7531'], ['1534961405', 'shangHaiXiehuiSecond', '2020年12月24日', '23时21分', '122次', '2020年12月27日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7541'], ['1534961411', 'shangHaiXiehuiSecond', '2020年12月24日', '23时21分', '122次', '2020年12月27日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7543'], ['1534961415', 'shangHaiXiehuiSecond', '2020年12月24日', '23时21分', '122次', '2020年12月27日', '23时21分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7545'], ['1535847494', 'shangHaiXiehuiSecond', '2020年12月28日', '17时59分', '104次', '2020年12月31日', '17时59分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7555'], ['1535847492', 'shangHaiXiehuiSecond', '2020年12月28日', '17时59分', '105次', '2020年12月31日', '17时59分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7553'], ['1535847490', 'shangHaiXiehuiSecond', '2020年12月28日', '17时59分', '105次', '2020年12月31日', '17时59分', '否', '否', '查看', '删除', 'http://www.srpa.com.cn/matchresult.aspx?matchid=7551']]
+
 
 if __name__ == "__main__":
     main()

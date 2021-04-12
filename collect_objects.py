@@ -1,49 +1,14 @@
-from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver.common.by import By
 import re
-import time
 from PIL import Image
 import yzm_rec
+from mypage_operate import *
 
 
-
-# 获取待采集的任务数据
-# 只获取单页
-def get_rows(type_name, driver):
-    driver.find_element(By.ID, "collectType").click()
-    dropdown = driver.find_element(By.ID, "collectType")
-    dropdown.find_element(By.XPATH, "//option[. = '{}']".format(type_name)).click()
-
-    ele = driver.find_elements_by_tag_name('tr')
-    rows = []
-    for i in ele:
-        rows.append(i.text.split())
-    del rows[0]
-    del rows[-1]
-
-    return rows, len(rows)
-
-
-# 使用模拟点击删除待处理任务
-def delete(driver, row_num):
-    driver.switch_to.window(driver.window_handles[0])
-    driver.switch_to.frame(0)
-    driver.find_elements(By.LINK_TEXT, "删除")[row_num].click()
-    driver.switch_to_alert().accept()
-    time.sleep(1)
-    driver.switch_to.accept()
-
-def delete_by_api(task_id):
-    ...
-
-
-def type_over_ten_(driver):
-    types = driver.find_element(By.ID, 'collectType').text
-    types_list = types.split()
-    for type in types_list:
-        ...
-    return types
+# 操作页面：源数据所在网站
+# class: 数据来源网站
+# 作用：查看源数据网页的返回情况以及个别字段
+# 缺点：                耦合度高
+#
 
 
 # 岭东资讯
@@ -79,38 +44,28 @@ class XinGeXieHui:
         self.driver = driver
         self.task_rows, self.rows_num = get_rows("信鸽协会", driver)
 
-    def xinge_xiehui(self, rows):
-        row_num = 0
-        for i in rows:
-            collect_times = i[4]
-            collect_times = re.sub("\D", "", collect_times)
-            if collect_times == "":
-                collect_times = 0
-            if int(collect_times) > 10:
-                # 查看原页面
-                self.driver.find_elements(By.LINK_TEXT, "查看")[row_num].click()
-                self.driver.switch_to.window(self.driver.window_handles[1])
-                xgxh_url = self.driver.current_url
-                if xgxh_url == 'http://c.crpa.net.cn/cc/alogin.aspx':
-                    self.check_yzm()
-                    while self.driver.current_url == 'http://c.crpa.net.cn/cc/alogin.aspx':
-                        self.driver.refresh()
-                        self.check_yzm()
-                    else:
-                        text = self.driver.find_element_by_xpath('//*[@id="FormView1_home_numLabel"]').text
-                        if text == '':
-                            delete(self.driver, row_num)
+    def xinge_xiehui(self, row):
 
-                        else:
-                            row_num = row_num + 1
-                else:
-                    text = self.driver.find_element_by_xpath('//*[@id="FormView1_home_numLabel"]').text
-                    if text == '':
-                        delete(self.driver, row_num)
-                    else:
-                        row_num = row_num + 1
+        # 查看原页面
+        self.driver.get(row[-1])
+        self.driver.switch_to.window(self.driver.window_handles[1])
+        xgxh_url = self.driver.current_url
+        if xgxh_url == 'http://c.crpa.net.cn/cc/alogin.aspx':
+            self.check_yzm()
+            while self.driver.current_url == 'http://c.crpa.net.cn/cc/alogin.aspx':
+                self.driver.refresh()
+                self.check_yzm()
             else:
-                row_num = row_num + 1
+                text = self.driver.find_element_by_xpath('//*[@id="FormView1_home_numLabel"]').text
+                if text == '': ...
+                # delete(self.driver, row_num)
+
+
+        else:
+            text = self.driver.find_element_by_xpath('//*[@id="FormView1_home_numLabel"]').text
+            if text == '':
+                ...
+                # delete(self.driver, row_num)
 
     def check_yzm(self):
         self.driver.save_screenshot('D:\\ps.png')
@@ -211,15 +166,5 @@ def main():
     driver.quit()
 
 
-def test_main():
-    driver = webdriver.Chrome()
-    driver.get("http://47.97.123.142:8780/pigeonDataCollect/superLogin.html")
-    driver.implicitly_wait(10)
-    driver.maximize_window()
-    login(driver)
-
-    type_over_ten_(driver)
-
-
 if __name__ == "__main__":
-    test_main()
+    main()
